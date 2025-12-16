@@ -19,7 +19,7 @@ STRICT RULES:
 - Be concise, clear, and professional.
 - Do NOT provide legal advice. Phrase suggestions as improvements or considerations.
 
-You must return a JSON object that strictly follows this schema:
+The response must be a single valid JSON object. Do not include any text before or after the JSON
 
 {
   "riskLevel": "low | medium | high",
@@ -52,9 +52,9 @@ function simpleChunk(text: string, size = 3500) {
 }
 
 function buildPrompt(chunk: string) {
-return `
+  return `
 Analyze the following PART of a contract.
-
+If any clause is vague, incomplete, one-sided, or unclear, it MUST be reported as an issue.
 Rules:
 - This is not the full contract
 - Identify risks, ambiguities, or unfavorable terms
@@ -117,7 +117,7 @@ async function analyze(chunks: string) {
         model: "gemini-2.5-flash",
         contents: [{ role: "user", parts: [{ text: chunks }] }],
         config: {
-            responseMimeType: "text/plain",
+            responseMimeType: "application/json",
             systemInstruction: CorePrompt,
         },
     });
