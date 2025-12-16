@@ -60,73 +60,41 @@ async function extractTextFromFile(file: File) {
     return await file.text()
 }
 
+
+
+
 export async function POST(req: NextRequest) {
-    try {
-        const formData = await req.formData()
-        const file = formData.get("File") as File | null
+  // get the Uploaded file and store in the database
+  const formData = await req.formData();
+  const file = formData.get("file") as File;
+  if (!file) {
+    return NextResponse.json({ error: "No file received" }, { status: 400 });
+  }
+  console.log("FILE TYPE : ", file.type);
+  const allowedTypes = ["application/pdf", "text/plain"];
+  if (!allowedTypes.includes(file.type)) {
+    return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
+  }
 
-        if (!file) {
-            return NextResponse.json(
-                { error: "No file uploaded" },
-                { status: 400 }
-            )
-        }
-
-        const allowedTypes = ["application/pdf", "text/plain"]
-
-        if (!allowedTypes.includes(file.type)) {
-            return NextResponse.json(
-                { error: "Invalid file type" },
-                { status: 400 }
-            )
-        }
-
-        if (file.size > 5 * 1024 * 1024) {
-            return NextResponse.json(
-                { error: "File too large" },
-                { status: 400 }
-            )
-        }
-
-        const text = await extractTextFromFile(file)
-
-        if (!text.trim()) {
-            return NextResponse.json(
-                { error: "Empty file content" },
-                { status: 400 }
-            )
-        }
-
-        const analysis = await analyze(text)
-
-        return NextResponse.json({
-            analysis
-        })
-
-    } catch (error) {
-        console.error("Analyze API error:", error)
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: 500 }
-        )
-    }
+  console.log(file.size);
+  if (file.size > 5 * 1024 * 1024) {
+    return NextResponse.json({ error: "File to Large" }, { status: 400 });
+  }
+  const text = await file.text();
+  //  Send the text to the GPT
+  // Get back a response and store the Response in Analyses Model / send it
+  return NextResponse.json(
+    {
+      message: "success",
+    },
+    { status: 201 }
+  );
 }
-
-//  Send the file to the GPT
-
-// Get back a response and store the Response in Analyses Model / send it 
-
-
-
-
-
-
 
 export async function GET(req: NextRequest) {
-    const { } = await req.json();
+  const {} = await req.json();
 }
 
-
 export async function DELETE(req: NextRequest) {
-    const { } = await req.json();
+  const {} = await req.json();
 }
