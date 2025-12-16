@@ -56,9 +56,7 @@ ${contract}
     return response.output_text
 }
 
-async function extractTextFromFile(file: File) {
-    return await file.text()
-}
+
 
 
 
@@ -82,10 +80,13 @@ export async function POST(req: NextRequest) {
   }
   const text = await file.text();
   //  Send the text to the GPT
+  const AI_response = analyze(text);
+  console.log("AI RESPONSE : ",AI_response);
   // Get back a response and store the Response in Analyses Model / send it
   return NextResponse.json(
     {
       message: "success",
+      AI_response
     },
     { status: 201 }
   );
