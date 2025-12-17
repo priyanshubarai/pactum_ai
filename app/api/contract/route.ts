@@ -18,7 +18,7 @@ STRICT RULES:
 - Be concise, clear, and professional.
 - Do NOT provide legal advice. Phrase suggestions as improvements or considerations.
 
-You must return a JSON object that strictly follows this schema:
+The response must be a single valid JSON object. Do not include any text before or after the JSON
 
 {
   "riskLevel": "low | medium | high",
@@ -51,14 +51,17 @@ function simpleChunk(text: string, size = 3500) {
 }
 
 function buildPrompt(chunk: string) {
-    return `
+  return `
 Analyze the following PART of a contract.
-
+If any clause is vague, incomplete, one-sided, or unclear, it MUST be reported as an issue.
 Rules:
 - This is not the full contract
-- Only report issues you see in this text
-- Do NOT assume missing clauses
-Payment terms
+- Identify risks, ambiguities, or unfavorable terms
+- Vague, one-sided, or unclear language counts as a risk
+- Do NOT assume content outside this text
+
+Focus on:
+- Payment terms
 - Scope clarity
 - Intellectual property ownership
 - Termination conditions
@@ -82,7 +85,7 @@ async function analyzeFullContract(contract: string) {
         try {
             json = JSON.parse(response!);
         } catch {
-            continue; // skip bad chunk instead of cras hing
+            continue; 
         }
 
         if (Array.isArray(json.issues)) {
@@ -113,13 +116,14 @@ async function analyze(chunks: string) {
         model: "gemini-2.5-flash",
         contents: [{ role: "user", parts: [{ text: chunks }] }],
         config: {
-            responseMimeType: "text/plain",
+            responseMimeType: "application/json",
             systemInstruction: CorePrompt,
         },
     });
 
     return response.text
 }
+
 
 export async function POST(req: NextRequest) {
     // get the Uploaded file and store in the database
@@ -151,6 +155,10 @@ export async function POST(req: NextRequest) {
         { status: 201 }
     );
 }
+
+
+
+
 
 export async function GET(req: NextRequest) {
     const { } = await req.json();
