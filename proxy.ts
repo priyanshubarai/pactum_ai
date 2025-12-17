@@ -1,7 +1,8 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
+import { useUser } from '@clerk/nextjs';
+import { auth, clerkMiddleware } from '@clerk/nextjs/server';
 
-export default clerkMiddleware((auth,req)=>{
-  console.log("AUTH:",auth)
+export default clerkMiddleware((Auth,req)=>{
+  
 });
 
 export const config = {
