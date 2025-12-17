@@ -143,8 +143,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "File to Large" }, { status: 400 });
     }
     const text = await file.text();
-    // const analysis = await analyzeFullContract(text)
-    const analysis = {risk : "many"}
+    const analysis = await analyzeFullContract(text)
     //save to database
     const res = await saveUserData(text,analysis);
     return NextResponse.json(
