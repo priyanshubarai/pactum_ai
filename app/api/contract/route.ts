@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import { GoogleGenAI } from "@google/genai"
+import { saveUserData } from "@/lib/Controller"
+import {connectDB} from '@/lib/connectDB'
 
-
-
+await connectDB();
 export const runtime = "nodejs"
-
 const geminiKey = process.env.GEMINI_KEY
-
 const CorePrompt = `You are an AI contract analysis engine.
 
 Your task is to analyze a contract and return a structured risk assessment.
@@ -122,12 +121,6 @@ async function analyze(chunks: string) {
     return response.text
 }
 
-
-
-
-
-
-
 export async function POST(req: NextRequest) {
     // get the Uploaded file and store in the database
     const formData = await req.formData();
@@ -146,10 +139,14 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "File to Large" }, { status: 400 });
     }
     const text = await file.text();
-    const analysis = await analyzeFullContract(text)
+    // const analysis = await analyzeFullContract(text)
+    const analysis = {risk : "many"}
+    //save to database
+    const res = await saveUserData(text,analysis);
     return NextResponse.json(
         {
             analysis,
+            res
         },
         { status: 201 }
     );
