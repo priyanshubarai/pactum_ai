@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
-import { saveUserData, getContractsById } from "@/lib/Controller";
-import { connectDB } from "@/lib/connectDB";
-import { currentUser } from "@clerk/nextjs/server";
-import { error } from "console";
+import { NextRequest, NextResponse } from "next/server"
+import { GoogleGenAI } from "@google/genai"
+import { auth, currentUser, clerkClient } from '@clerk/nextjs/server'
 
-export const runtime = "nodejs";
-const geminiKey = process.env.GEMINI_KEY;
+
+export const runtime = "nodejs"
+
+const geminiKey = process.env.GEMINI_KEY
+
 const CorePrompt = `You are an AI contract analysis engine.
 
 Your task is to analyze a contract and return a structured risk assessment.
@@ -52,7 +52,7 @@ function simpleChunk(text: string, size = 3500) {
 }
 
 function buildPrompt(chunk: string) {
-  return `
+    return `
 Analyze the following PART of a contract.
 If any clause is vague, incomplete, one-sided, or unclear, it MUST be reported as an issue.
 Rules:
@@ -77,16 +77,24 @@ ${chunk}
 }
 
 async function analyzeFullContract(contract: string) {
-  const chunks = simpleChunk(contract);
-  const allIssues = [];
+    const chunks = simpleChunk(contract);
+    const allIssues = [];
 
-  for (const chunk of chunks) {
-    const response = await analyze(buildPrompt(chunk));
-    let json;
-    try {
-      json = JSON.parse(response!);
-    } catch {
-      continue;
+    for (const chunk of chunks) {
+        const response = await analyze(buildPrompt(chunk));
+        let json;
+        try {
+            json = JSON.parse(response!);
+        } catch {
+            continue;
+        }
+
+        if (Array.isArray(json.issues)) {
+            allIssues.push(...json.issues);
+        }
+
+        // small pause to avoid 503
+        await new Promise(r => setTimeout(r, 300));
     }
 
     if (Array.isArray(json.issues)) {
@@ -155,6 +163,30 @@ export async function POST(req: NextRequest) {
   );
 }
 
+
+
+
+// All Contracts for a User Endpoint 
+export async function GET(req: NextRequest) {
+    const { isAuthenticated } = await auth()
+
+    if (!isAuthenticated) {
+        return NextResponse.json({
+            message: "You aint logged in "
+        })
+    }
+
+    const user = await currentUser()
+
+    // Replace with Model name and correct User ID object 
+    // const contracts = await ContractModel.find({
+    //     user
+    // })
+
+    // return NextResponse.json({
+    //     message: [contracts]
+    // })
+
 export async function GET(req: NextRequest) {
     await connectDB();
   const user = await currentUser();
@@ -173,6 +205,32 @@ export async function GET(req: NextRequest) {
     });
 }
 
+// Get the user's full Backend User object
+
+
+
 export async function DELETE(req: NextRequest) {
-  const {} = await req.json();
+
+    const { isAuthenticated } = await auth()
+    if (!isAuthenticated) {
+        return NextResponse.json({
+            message: "You aint logged in "
+        })
+    }
+    const user = await currentUser()
+    const contract = req.body
+
+
+    // Replace with Model name and correct User ID object 
+    // await ContractModel.delete({
+    //     contract,
+    //     user
+    // })
+
+    return NextResponse.json({
+        message: "Deleted"
+    })
+
 }
+
+
