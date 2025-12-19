@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import { GoogleGenAI } from "@google/genai"
 import { auth, currentUser, clerkClient } from '@clerk/nextjs/server'
-
+import { connectDB } from "@/lib/connectDB"
+import { saveUserData, getContractsById } from "@/lib/Controller"
+import Contract from "@/lib/model/Model"
 
 export const runtime = "nodejs"
 
@@ -52,7 +54,7 @@ function simpleChunk(text: string, size = 3500) {
 }
 
 function buildPrompt(chunk: string) {
-    return `
+  return `
 Analyze the following PART of a contract.
 If any clause is vague, incomplete, one-sided, or unclear, it MUST be reported as an issue.
 Rules:
@@ -77,24 +79,16 @@ ${chunk}
 }
 
 async function analyzeFullContract(contract: string) {
-    const chunks = simpleChunk(contract);
-    const allIssues = [];
+  const chunks = simpleChunk(contract);
+  const allIssues = [];
 
-    for (const chunk of chunks) {
-        const response = await analyze(buildPrompt(chunk));
-        let json;
-        try {
-            json = JSON.parse(response!);
-        } catch {
-            continue;
-        }
-
-        if (Array.isArray(json.issues)) {
-            allIssues.push(...json.issues);
-        }
-
-        // small pause to avoid 503
-        await new Promise(r => setTimeout(r, 300));
+  for (const chunk of chunks) {
+    const response = await analyze(buildPrompt(chunk));
+    let json;
+    try {
+      json = JSON.parse(response!);
+    } catch {
+      continue;
     }
 
     if (Array.isArray(json.issues)) {
@@ -102,20 +96,29 @@ async function analyzeFullContract(contract: string) {
     }
 
     // small pause to avoid 503
-    await new Promise((r) => setTimeout(r, 300));
+    await new Promise(r => setTimeout(r, 300));
+
+    if (Array.isArray(json.issues)) {
+      allIssues.push(...json.issues);
+    }
   }
+
+  // small pause to avoid 503
+  await new Promise((r) => setTimeout(r, 300));
+
 
   return {
     riskLevel: allIssues.some((i) => i.severity === "high")
       ? "high"
       : allIssues.some((i) => i.severity === "medium")
-      ? "medium"
-      : "low",
+        ? "medium"
+        : "low",
     executiveSummary: "Summary based on contract analysis.",
     issues: allIssues,
     missingClauses: [],
     recommendedActions: [],
   };
+
 }
 
 const ai = new GoogleGenAI({ apiKey: geminiKey });
@@ -133,7 +136,7 @@ async function analyze(chunks: string) {
 }
 
 export async function POST(req: NextRequest) {
-    await connectDB();
+  await connectDB();
   // get the Uploaded file and store in the database
   const formData = await req.formData();
   const file = formData.get("File") as File;
@@ -165,32 +168,19 @@ export async function POST(req: NextRequest) {
 
 
 
-
 // All Contracts for a User Endpoint 
-export async function GET(req: NextRequest) {
-    const { isAuthenticated } = await auth()
 
-    if (!isAuthenticated) {
-        return NextResponse.json({
-            message: "You aint logged in "
-        })
-    }
-
-    const user = await currentUser()
-
-    // Replace with Model name and correct User ID object 
-    // const contracts = await ContractModel.find({
-    //     user
-    // })
-
-    // return NextResponse.json({
-    //     message: [contracts]
-    // })
 
 export async function GET(req: NextRequest) {
-    await connectDB();
+
+  await connectDB();
   const user = await currentUser();
   const user_id = user?.primaryEmailAddressId || "12345";
+  if (!user) {
+    return NextResponse.json({
+      message: "Youre not Allowed to access the content"
+    })
+  }
   if (!user_id) {
     return NextResponse.json({ error: "No User found" });
   }
@@ -199,38 +189,33 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "No contracts found" });
   }
   return NextResponse.json({
-      success: true,
-      count: contract_data_list.length,
-      data: contract_data_list,
-    });
+    success: true,
+    count: contract_data_list.length,
+    data: contract_data_list,
+  });
 }
 
-// Get the user's full Backend User object
 
 
 
 export async function DELETE(req: NextRequest) {
 
-    const { isAuthenticated } = await auth()
-    if (!isAuthenticated) {
-        return NextResponse.json({
-            message: "You aint logged in "
-        })
-    }
-    const user = await currentUser()
-    const contract = req.body
-
-
-    // Replace with Model name and correct User ID object 
-    // await ContractModel.delete({
-    //     contract,
-    //     user
-    // })
-
+  await connectDB();
+  const user = await currentUser();
+  const user_id = user?.primaryEmailAddressId || "12345";
+  if (!user) {
     return NextResponse.json({
-        message: "Deleted"
+      message: "Youre not Allowed to access the content"
     })
+  }
+
+  await Contract.deleteMany({
+    user_id
+  })
+  
+  return NextResponse.json({
+    message: "Deleted All "
+  })
 
 }
-
 

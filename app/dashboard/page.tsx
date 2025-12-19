@@ -1,31 +1,23 @@
 "use client"
-
 import FileUpload from "@/components/ui/file-upload"
-import { UserButton } from "@clerk/nextjs"
-
+import { Sidebar } from "@/components/ui/Sidebar"
+import ContentRenderer from "@/components/ContentRender"
 export default function Dashboard() {
-  return (
-    <div className="flex h-screen bg-[#141414] text-gray-300">
-      {/* Sidebar */}
-      <aside className="w-64 border-r border-gray-600 bg-[#0c0c0c] shadow-md">
-        <div className="bg-[#0c0c0c] p-6">
-          <h1 className="text-2xl font-bold text-white">Pactum.ai</h1>
-        </div>
-      </aside>
-
+  return (<>
+    {/* COntent Area */}
+    <div className="flex h-full bg-[#0d0d0d] text-gray-300">
+    <Sidebar/>
       <div className=" flex flex-col flex-1">
-        {/* Navbar */}
-        {/* <header className="flex items-center justify-end p-4 bg-black shadow-md">
-          <UserButton afterSignOutUrl="/" />
-        </header> */}
 
         {/* Main Content */}
         <main className="flex-1 p-6">
-          <div className="flex items-center justify-center h-full">
-            <FileUpload />
+          <div className="ml-30 flex items-center justify-center h-full">
+            {/* <FileUpload /> */}
+            <ContentRenderer/>
           </div>
         </main>
       </div>
     </div>
+  </>
   )
 }
