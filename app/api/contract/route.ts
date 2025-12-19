@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { GoogleGenAI } from "@google/genai"
-
+import { auth, currentUser, clerkClient } from '@clerk/nextjs/server'
 
 
 export const runtime = "nodejs"
@@ -52,7 +52,7 @@ function simpleChunk(text: string, size = 3500) {
 }
 
 function buildPrompt(chunk: string) {
-  return `
+    return `
 Analyze the following PART of a contract.
 If any clause is vague, incomplete, one-sided, or unclear, it MUST be reported as an issue.
 Rules:
@@ -86,7 +86,7 @@ async function analyzeFullContract(contract: string) {
         try {
             json = JSON.parse(response!);
         } catch {
-            continue; 
+            continue;
         }
 
         if (Array.isArray(json.issues)) {
@@ -156,11 +156,55 @@ export async function POST(req: NextRequest) {
 
 
 
-
+// All Contracts for a User Endpoint 
 export async function GET(req: NextRequest) {
-    const { } = await req.json();
+    const { isAuthenticated } = await auth()
+
+    if (!isAuthenticated) {
+        return NextResponse.json({
+            message: "You aint logged in "
+        })
+    }
+
+    const user = await currentUser()
+
+    // Replace with Model name and correct User ID object 
+    // const contracts = await ContractModel.find({
+    //     user
+    // })
+
+    // return NextResponse.json({
+    //     message: [contracts]
+    // })
+
 }
+
+// Get the user's full Backend User object
+
+
 
 export async function DELETE(req: NextRequest) {
-    const { } = await req.json();
+
+    const { isAuthenticated } = await auth()
+    if (!isAuthenticated) {
+        return NextResponse.json({
+            message: "You aint logged in "
+        })
+    }
+    const user = await currentUser()
+    const contract = req.body
+
+
+    // Replace with Model name and correct User ID object 
+    // await ContractModel.delete({
+    //     contract,
+    //     user
+    // })
+
+    return NextResponse.json({
+        message: "Deleted"
+    })
+
 }
+
+
