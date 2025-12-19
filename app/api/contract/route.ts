@@ -36,19 +36,19 @@ The response must be a single valid JSON object. Do not include any text before 
   ],
   "missingClauses": ["string"],
   "recommendedActions": ["string"]
-}`
+}`;
 
-// CHUNKIN LOGIC 
+// CHUNKIN LOGIC
 function simpleChunk(text: string, size = 3500) {
-    const chunks = [];
-    let i = 0;
+  const chunks = [];
+  let i = 0;
 
-    while (i < text.length) {
-        chunks.push(text.slice(i, i + size));
-        i += size;
-    }
+  while (i < text.length) {
+    chunks.push(text.slice(i, i + size));
+    i += size;
+  }
 
-    return chunks;
+  return chunks;
 }
 
 function buildPrompt(chunk: string) {
@@ -97,60 +97,70 @@ async function analyzeFullContract(contract: string) {
         await new Promise(r => setTimeout(r, 300));
     }
 
-    return {
-        riskLevel: allIssues.some(i => i.severity === "high")
-            ? "high"
-            : allIssues.some(i => i.severity === "medium")
-                ? "medium"
-                : "low",
-        executiveSummary: "Summary based on contract analysis.",
-        issues: allIssues,
-        missingClauses: [],
-        recommendedActions: [],
-    };
+    if (Array.isArray(json.issues)) {
+      allIssues.push(...json.issues);
+    }
+
+    // small pause to avoid 503
+    await new Promise((r) => setTimeout(r, 300));
+  }
+
+  return {
+    riskLevel: allIssues.some((i) => i.severity === "high")
+      ? "high"
+      : allIssues.some((i) => i.severity === "medium")
+      ? "medium"
+      : "low",
+    executiveSummary: "Summary based on contract analysis.",
+    issues: allIssues,
+    missingClauses: [],
+    recommendedActions: [],
+  };
 }
 
 const ai = new GoogleGenAI({ apiKey: geminiKey });
 async function analyze(chunks: string) {
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: [{ role: "user", parts: [{ text: chunks }] }],
+    config: {
+      responseMimeType: "application/json",
+      systemInstruction: CorePrompt,
+    },
+  });
 
-    const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: [{ role: "user", parts: [{ text: chunks }] }],
-        config: {
-            responseMimeType: "application/json",
-            systemInstruction: CorePrompt,
-        },
-    });
-
-    return response.text
+  return response.text;
 }
 
-
 export async function POST(req: NextRequest) {
-    // get the Uploaded file and store in the database
-    const formData = await req.formData();
-    const file = formData.get("File") as File;
-    if (!file) {
-        return NextResponse.json({ error: "No file received" }, { status: 400 });
-    }
-    console.log("FILE TYPE : ", file.type);
-    const allowedTypes = ["application/pdf", "text/plain"];
-    if (!allowedTypes.includes(file.type)) {
-        return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
-    }
+    await connectDB();
+  // get the Uploaded file and store in the database
+  const formData = await req.formData();
+  const file = formData.get("File") as File;
+  if (!file) {
+    return NextResponse.json({ error: "No file received" }, { status: 400 });
+  }
+  console.log("FILE TYPE : ", file.type);
+  const allowedTypes = ["application/pdf", "text/plain"];
+  if (!allowedTypes.includes(file.type)) {
+    return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
+  }
 
-    console.log(file.size);
-    if (file.size > 5 * 1024 * 1024) {
-        return NextResponse.json({ error: "File to Large" }, { status: 400 });
-    }
-    const text = await file.text();
-    const analysis = await analyzeFullContract(text)
-    return NextResponse.json(
-        {
-            analysis,
-        },
-        { status: 201 }
-    );
+  console.log(file.size);
+  if (file.size > 5 * 1024 * 1024) {
+    return NextResponse.json({ error: "File to Large" }, { status: 400 });
+  }
+  const text = await file.text();
+  const analysis = await analyzeFullContract(text);
+  //save to database
+  const newUser = await saveUserData(text, analysis);
+  return NextResponse.json(
+    {
+      analysis,
+      newUser,
+    },
+    { status: 201 }
+  );
 }
 
 
@@ -177,6 +187,22 @@ export async function GET(req: NextRequest) {
     //     message: [contracts]
     // })
 
+export async function GET(req: NextRequest) {
+    await connectDB();
+  const user = await currentUser();
+  const user_id = user?.primaryEmailAddressId || "12345";
+  if (!user_id) {
+    return NextResponse.json({ error: "No User found" });
+  }
+  const contract_data_list = await getContractsById(user_id);
+  if (!contract_data_list) {
+    return NextResponse.json({ error: "No contracts found" });
+  }
+  return NextResponse.json({
+      success: true,
+      count: contract_data_list.length,
+      data: contract_data_list,
+    });
 }
 
 // Get the user's full Backend User object
