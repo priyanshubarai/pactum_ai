@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from "next/server"
-import { GoogleGenAI } from "@google/genai"
-import { auth, currentUser, clerkClient } from '@clerk/nextjs/server'
-import { connectDB } from "@/lib/connectDB"
-import { saveUserData, getContractsById } from "@/lib/Controller"
-import Contract from "@/lib/model/Model"
+import { NextRequest, NextResponse } from "next/server";
+import { GoogleGenAI } from "@google/genai";
+import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
+import { connectDB } from "@/lib/connectDB";
+import { saveUserData, getContractsById } from "@/lib/Controller";
+import Contract from "@/lib/model/Model";
 
-export const runtime = "nodejs"
+export const runtime = "nodejs";
 
-const geminiKey = process.env.GEMINI_KEY
+const geminiKey = process.env.GEMINI_KEY;
 
 const CorePrompt = `You are an AI contract analysis engine.
 
@@ -96,7 +96,7 @@ async function analyzeFullContract(contract: string) {
     }
 
     // small pause to avoid 503
-    await new Promise(r => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, 300));
 
     if (Array.isArray(json.issues)) {
       allIssues.push(...json.issues);
@@ -106,19 +106,17 @@ async function analyzeFullContract(contract: string) {
   // small pause to avoid 503
   await new Promise((r) => setTimeout(r, 300));
 
-
   return {
     riskLevel: allIssues.some((i) => i.severity === "high")
       ? "high"
       : allIssues.some((i) => i.severity === "medium")
-        ? "medium"
-        : "low",
+      ? "medium"
+      : "low",
     executiveSummary: "Summary based on contract analysis.",
     issues: allIssues,
     missingClauses: [],
     recommendedActions: [],
   };
-
 }
 
 const ai = new GoogleGenAI({ apiKey: geminiKey });
@@ -143,7 +141,6 @@ export async function POST(req: NextRequest) {
   if (!file) {
     return NextResponse.json({ error: "No file received" }, { status: 400 });
   }
-  console.log("FILE TYPE : ", file.type);
   const allowedTypes = ["application/pdf", "text/plain"];
   if (!allowedTypes.includes(file.type)) {
     return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
@@ -156,9 +153,11 @@ export async function POST(req: NextRequest) {
   const text = await file.text();
   const analysis = await analyzeFullContract(text);
   //save to database
-  const newUser = await saveUserData(text, analysis);
+  const newUser = await saveUserData(file.name,text, analysis);
   return NextResponse.json(
     {
+      success: "true",
+      filename : file.name,
       analysis,
       newUser,
     },
@@ -166,25 +165,23 @@ export async function POST(req: NextRequest) {
   );
 }
 
-
-
-// All Contracts for a User Endpoint 
-
+// All Contracts for a User Endpoint
 
 export async function GET(req: NextRequest) {
-
   await connectDB();
   const user = await currentUser();
-  const user_id = user?.primaryEmailAddressId || "12345";
-  if (!user) {
-    return NextResponse.json({
-      message: "Youre not Allowed to access the content"
-    })
+  const user_id = user?.primaryEmailAddressId || "00000";
+  if (process.env.NODE_ENV=="production") {
+    if (!user) {
+      return NextResponse.json({
+        error: "Youre not Allowed to access the content",
+      });
+    }
+    if (!user_id) {
+      return NextResponse.json({ error: "No User found" });
+    }
   }
-  if (!user_id) {
-    return NextResponse.json({ error: "No User found" });
-  }
-  const contract_data_list = await getContractsById(user_id);
+  const contract_data_list =  await getContractsById(user_id) ;
   if (!contract_data_list) {
     return NextResponse.json({ error: "No contracts found" });
   }
@@ -195,27 +192,21 @@ export async function GET(req: NextRequest) {
   });
 }
 
-
-
-
 export async function DELETE(req: NextRequest) {
-
   await connectDB();
   const user = await currentUser();
   const user_id = user?.primaryEmailAddressId || "12345";
   if (!user) {
     return NextResponse.json({
-      message: "Youre not Allowed to access the content"
-    })
+      message: "Youre not Allowed to access the content",
+    });
   }
 
   await Contract.deleteMany({
-    user_id
-  })
-  
+    user_id,
+  });
+
   return NextResponse.json({
-    message: "Deleted All "
-  })
-
+    message: "Deleted All ",
+  });
 }
-

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ShieldCheck, ArrowUpRight } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import { SignedIn } from "@clerk/clerk-react";
+import { redirect } from "next/navigation";
 
 export function Navbar() {
   const scrollToSection = (id: string) => {
@@ -45,7 +46,7 @@ export function Navbar() {
               onClick={() => scrollToSection("waitlist")}
               className="hover:text-foreground transition-colors"
             >
-              Security
+              Feedback
             </button>
           </div>
 
@@ -54,7 +55,7 @@ export function Navbar() {
               className="bg-secondary text-primary rounded hover:bg-background"
               variant="outline"
               size="sm"
-              onClick={() => scrollToSection("waitlist")}
+              onClick={() => redirect("/dashboard")}
             >
               Try Now <ArrowUpRight />
             </Button>
