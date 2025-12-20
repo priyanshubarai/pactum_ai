@@ -1,6 +1,6 @@
-"use client"
-import FileUpload from "@/components/ui/file-upload"
-import { Sidebar } from "@/components/ui/sidebar"
+
+// import FileUpload from "@/components/ui/file-upload"
+import { Sidebar } from "@/components/sidebar"
 import ContentRenderer from "@/components/ContentRender"
 export default function Dashboard() {
   return (<>

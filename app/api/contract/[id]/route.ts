@@ -8,9 +8,9 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = params;
     await connectDB();
-    const contract = await Contract.findById(id);
+    console.log(`FETCHING CONTRACTS OF USER ${params.id} FROM DATABASE`)
+    const contract = await Contract.find({user_id: params.id});
     return NextResponse.json({ success: "true", contract }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ success: "false", message: `ERROR : ${error}` });
