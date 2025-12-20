@@ -20,7 +20,8 @@ STRICT RULES:
 - If no issues are found, return an empty array for "issues".
 - Be concise, clear, and professional.
 - Do NOT provide legal advice. Phrase suggestions as improvements or considerations.
-
+- Do NOT invent article numbers.
+- If no explicit article is referenced, return an empty array.
 The response must be a single valid JSON object. Do not include any text before or after the JSON
 
 {
@@ -34,8 +35,9 @@ The response must be a single valid JSON object. Do not include any text before 
       "explanation": "string",
       "suggestion": "string",
       "clauseSnippet": "string"
-    }
-  ],
+      "referencedArticles": ["string"]
+      }
+      ],
   "missingClauses": ["string"],
   "recommendedActions": ["string"]
 }`;
@@ -212,7 +214,7 @@ export async function DELETE(req: NextRequest) {
   await Contract.deleteMany({
     user_id
   })
-  
+
   return NextResponse.json({
     message: "Deleted All "
   })

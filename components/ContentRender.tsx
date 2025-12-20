@@ -80,6 +80,18 @@ export function ContentRenderer({ issues }: ContentRendererProps) {
                             {issue.clauseSnippet}
                         </p>
                     </Section>
+
+                    <Section title="Referenced Articles">
+                        {issue.referencedAritcles.map((article: string) => (
+                            
+                            <Badge variant="outline">
+                                {article}
+                            </Badge>
+                        ))}
+
+
+
+                    </Section>
                 </div>
             ))}
 
