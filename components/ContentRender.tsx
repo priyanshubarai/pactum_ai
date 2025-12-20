@@ -90,7 +90,6 @@ export function ContentRenderer({ issues }: ContentRendererProps) {
                         ))}
 
 
-
                     </Section>
                 </div>
             ))}
