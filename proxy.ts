@@ -7,11 +7,11 @@ const isProtectedRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth,req)=>{
-  if (isProtectedRoute(req)) {
-    await auth.protect()
-    console.log("trying to access dashboard")
-    console.log("auth: ",auth)
-  }
+  // if (isProtectedRoute(req)) {
+  //   await auth.protect()
+  //   console.log("trying to access dashboard")
+  //   console.log("auth: ",auth)
+  // }
 });
 
 export const config = {
