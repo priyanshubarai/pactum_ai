@@ -19,11 +19,6 @@ export function Sidebar() {
         <SidebarItem />
         <SidebarItem />
         <SidebarItem /> 
-        <Badge variant="high">High</Badge>
-        <Badge variant="low">Low</Badge>
-        <Badge variant="medium">Medium</Badge>
-        
-
         </div>
         
     </div>
