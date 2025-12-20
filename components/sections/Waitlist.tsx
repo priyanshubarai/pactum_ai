@@ -46,7 +46,7 @@ export function Waitlist() {
               disabled={false}
               className="w-full sm:w-auto bg-button text-foreground h-12 rounded"
             >
-              Request Access
+              Send
             </Button>
           </form>
 

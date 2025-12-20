@@ -6,7 +6,7 @@ import Orb from "@/components/Orb";
 
 export function Hero() {
   return (
-    <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden h-screen flex items-center">
+    <section  className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden h-screen flex items-center">
       {/* Background Gradients */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-250 h-125 bg-indigo-500/20 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-200 h-150 bg-purple-500/10 blur-[100px] rounded-full pointer-events-none" />

@@ -44,7 +44,7 @@ const features = [
 
 export function Features() {
   return (
-    <section id="how-it-works" className="py-24 bg-zinc-900/30 border-y border-white/5">
+    <section id="features" className="py-24 bg-zinc-900/30 border-y border-white/5">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Risk analysis in three steps</h2>

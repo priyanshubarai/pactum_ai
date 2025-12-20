@@ -42,7 +42,7 @@ export function Navbar() {
               How it Works
             </button>
             <button
-              onClick={() => scrollToSection("security")}
+              onClick={() => scrollToSection("waitlist")}
               className="hover:text-foreground transition-colors"
             >
               Security
