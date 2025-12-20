@@ -1,17 +1,21 @@
 type SectionProps = {
-  title: string;
+  title: React.ReactNode;
   children: React.ReactNode;
 };
 
 export default function Section({ title, children }: SectionProps) {
   return (
-    <div className="space-y-2">
-      <h3 className="text-xl font-semibold text-white">
+    <section className="space-y-3">
+      {/* Section Title */}
+      <h3 className="text-lg font-semibold text-white uppercase tracking-wide">
         {title}
       </h3>
-      <p className="text-md text-neutral-300 leading-relaxed">
+
+      {/* Section Content */}
+      <div className="text-md text-neutral-300 leading-relaxed space-y-3">
         {children}
-      </p>
-    </div>
+      </div>
+    </section>
   );
 }
+
