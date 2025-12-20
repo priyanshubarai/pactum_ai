@@ -8,7 +8,7 @@ export async function GET(req: NextRequest, { params }: {
         id: string
     }
 }) {
-
+    return NextResponse.json({message : "received"})
 
 }
 
