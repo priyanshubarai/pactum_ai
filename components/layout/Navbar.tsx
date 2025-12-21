@@ -51,14 +51,14 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-4">
-            <Button
-              className="bg-secondary text-primary rounded hover:bg-background"
-              variant="outline"
-              size="sm"
+            <button
+              className="bg-secondary text-primary rounded hover:bg-background outline flex flex-row h-7 w-22 sm:text-wrap justify-center items-center text-sm"
+              // variant="outline"
+              // size="sm"
               onClick={() => redirect("/dashboard")}
             >
-              Try Now <ArrowUpRight />
-            </Button>
+              Try Now <ArrowUpRight size={"18"}/>
+            </button>
             <SignedIn>
               <UserButton />
             </SignedIn>
