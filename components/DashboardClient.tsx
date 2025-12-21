@@ -1,5 +1,5 @@
 "use client";
-
+import { Spinner } from "@/components/ui/spinner"
 import { useEffect, useState } from "react";
 import { Sidebar } from "./sidebar/sidebar";
 import { ContentRenderer } from "./ContentRender";
@@ -61,9 +61,9 @@ export default function DashboardClient() {
               <Shell className="sm:w-auto md:w-2xl lg:w-3xl flex-1">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Basic</CardTitle>
+                    <CardTitle>Upload</CardTitle>
                     <CardDescription>
-                      Basic controlled file upload.
+                      .txt file | max 5mb
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -78,7 +78,12 @@ export default function DashboardClient() {
                 onClick={handleAnalyze}
                 disabled={loading || files.length == 0}
               >
-                {loading ? "Analyzing..." : "Analyze"}
+                {loading ? (
+                  <>
+                    <Spinner className="size-6" />
+                    Analyzing...
+                  </>
+                ) : "Analyze"}
               </Button>
             </div>
           ) : (
