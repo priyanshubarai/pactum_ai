@@ -1,5 +1,5 @@
 import DashboardClient from "@/components/DashboardClient"
-import sampleResponse from "@/sample_response.json"
+import sampleResponse from "@/sample_response"
 import type { Issue } from "@/components/ContentRender"
 // import { ClerkProvider } from "@clerk/nextjs"
 

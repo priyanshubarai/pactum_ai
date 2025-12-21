@@ -3,7 +3,7 @@ import { Badge } from "./ui/badge";
 
 export interface Issue {
     category: string;
-    severity: "low" | "medium" | "high";
+    severity: "low" | "medium" | "high" | String;
     title: string;
     explanation: string;
     suggestion: string;

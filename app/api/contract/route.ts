@@ -146,7 +146,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
   }
 
-  console.log(file.size);
+  console.log("FILE RECEIVED : ",file.size,file.name,file.type);
   if (file.size > 5 * 1024 * 1024) {
     return NextResponse.json({ error: "File to Large" }, { status: 400 });
   }
@@ -154,6 +154,7 @@ export async function POST(req: NextRequest) {
   const analysis = await analyzeFullContract(text);
   //save to database
   const newUser = await saveUserData(file.name,text, analysis);
+  console.log("Analysis : ",analysis);
   return NextResponse.json(
     {
       success: "true",
