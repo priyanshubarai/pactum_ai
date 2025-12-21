@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { FileUploadDemo } from "@/components/fileUpload/file-upload-demo";
+import { Shell } from "./fileUpload/shell";
 
 export default function DashboardClient() {
   const [issues, setIssues] = useState<Issue[] | null>(null);
@@ -54,10 +55,10 @@ export default function DashboardClient() {
         {/* <main className="flex-1 p-6"> */}
         <div className="flex items-center justify-center h-full">
           {!issues ? (
-
-            <div className="flex flex-col items-center gap-5">
+            <div className="flex flex-col w-full items-center gap-5">
               {/* <FileUpload /> */}
-              <div>
+
+              <Shell className="sm:w-auto md:w-2xl lg:w-3xl flex-1">
                 <Card>
                   <CardHeader>
                     <CardTitle>Basic</CardTitle>
@@ -69,7 +70,8 @@ export default function DashboardClient() {
                     <FileUploadDemo files={files} setFiles={setFiles} />
                   </CardContent>
                 </Card>
-              </div>
+              </Shell>
+
               <Button
                 variant="premium"
                 size="lg"
@@ -79,7 +81,6 @@ export default function DashboardClient() {
                 {loading ? "Analyzing..." : "Analyze"}
               </Button>
             </div>
-
           ) : (
             <ContentRenderer issues={issues} />
           )}
