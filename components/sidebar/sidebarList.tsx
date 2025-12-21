@@ -2,6 +2,7 @@
 import { SidebarItem } from "@/components/sidebar/SidebarItem";
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface sidebarProps {
   _id: string;
@@ -15,14 +16,16 @@ interface sidebarProps {
 
 const SidebarList = () => {
   const handleDelete = async (id: string) => {
-    setContranctList(prev => prev.filter(item => item._id !== id));
+    setContranctList((prev) => prev.filter((item) => item._id !== id));
     await fetch(`http://localhost:3000/api/contract/${id}`, {
-        method: "DELETE",
-      });
+      method: "DELETE",
+    });
   };
 
   const user = useUser();
-  const [contractList, setContranctList] = useState<sidebarProps[]>([]);
+  const [contractList, setContranctList] = useState<sidebarProps[] | null>(
+    null
+  );
 
   async function getContractsList() {
     try {
@@ -30,9 +33,7 @@ const SidebarList = () => {
         process.env.NODE_ENV == "production"
           ? user?.user?.primaryEmailAddressId
           : "12345";
-      const res = await fetch(
-        `http://localhost:3000/api/contract/${user_id}`
-      );
+      const res = await fetch(`http://localhost:3000/api/contract/${user_id}`);
       const data = await res.json();
       setContranctList(data.contract);
     } catch (err) {
@@ -44,7 +45,20 @@ const SidebarList = () => {
   }, []);
 
   if (!contractList) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex flex-col">
+        <div className="space-y-2">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton
+              key={i}
+              className={
+                i % 2 === 0 ? "h-4 w-62.5 rounded-full" : "h-4 w-50.5 rounded-full"
+              }
+            />
+          ))}
+        </div>
+      </div>
+    );
   }
 
   if (contractList.length === 0) {

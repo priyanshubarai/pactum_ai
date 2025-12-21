@@ -16,13 +16,13 @@ export function Sidebar() {
         <AnimatedBadge text="AI Ready " color="#6366f1" />
       </div>
       <SidebarList />
-      <footer className="outline shrink flex flex-row justify-start px-3 py-2 gap-2 items-center w-full  rounded mt-auto">
+      {fullName && email && (<footer className="outline shrink flex flex-row justify-start px-3 py-2 gap-2 items-center w-full  rounded mt-auto">
         <UserButton />
         <div className="flex flex-col">
           {fullName}
           <div className="text-sm">{email}</div>
         </div>
-      </footer>
+      </footer>)}
     </div>
   );
 }
