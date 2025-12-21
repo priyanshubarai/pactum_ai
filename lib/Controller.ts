@@ -26,3 +26,5 @@ export async function getContractsById(user_id:string){
         console.error("ERROR in Fecthing contracts:",err)
     }
 }
+
+export async function getAnalysis()

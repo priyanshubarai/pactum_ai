@@ -8,6 +8,7 @@ export interface Issue {
     explanation: string;
     suggestion: string;
     clauseSnippet: string;
+    referencedArticle : Array<string>
 }
 
 export interface Analysis {

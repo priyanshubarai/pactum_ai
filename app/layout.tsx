@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Toaster } from "@/components/ui/sonner"
 
 export const metadata: Metadata = {
   title: "Pactum.ai",
@@ -15,7 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <ClerkProvider>
-        <body>{children}</body>
+        <body>
+          {children}
+          <Toaster />
+        </body>
       </ClerkProvider>
     </html>
   );

@@ -1,51 +1,71 @@
 "use client";
-
-import SidebarItem from "@/components/sidebarList";
-import { Badge } from "@/components/ui/badge";
+import { SidebarItem } from "@/components/SidebarItem";
+import ContractsOfUser from "@/sample_getContractsOfUser";
 import { useEffect, useState } from "react";
+import { useUser } from "@clerk/nextjs";
 
-const SidebarList = ({ ContractsList }: any) => {
+interface sidebarProps {
+  _id: string;
+  user_id: string;
+  filename: string;
+  text: string;
+  analysis: object;
+  createdAt: string;
+  updatedAt: string;
+}
 
-  if (!ContractsList) {
+const SidebarList = () => {
+  const handleDelete = async (id: string) => {
+    setContranctList(prev => prev.filter(item => item._id !== id));
+    await fetch(`http://localhost:3000/api/contract/${id}`, {
+        method: "DELETE",
+      });
+  };
+
+  const user = useUser();
+  const [contractList, setContranctList] = useState<sidebarProps[]>([]);
+
+  async function getContractsList() {
+    try {
+      const user_id =
+        process.env.NODE_ENV == "production"
+          ? user?.user?.primaryEmailAddressId
+          : "12345";
+      const res = await fetch(
+        `http://localhost:3000/api/contract/${user_id}`
+      );
+      const data = await res.json();
+      console.log("RESPONSE : ", data.contract);
+      setContranctList(data.contract);
+    } catch (err) {
+      console.error("ERROR IN SIDEBAR : ", err);
+    }
+  }
+  useEffect(() => {
+    getContractsList();
+  }, []);
+
+  if (!contractList) {
     return <div>Loading...</div>;
   }
 
-  if (ContractsList.length === 0) {
+  if (contractList.length === 0) {
     return <div>No Contracts History</div>;
   }
 
   return (
     <div className="flex flex-col gap-1 p-2 mb-15">
-      {ContractsList.map((item: any) => (
+      {contractList.map((item: sidebarProps) => (
         <SidebarItem
           key={item._id}
-          title={item.title}
-          status={item.status}
+          id={item._id}
           time={item.createdAt}
           filename={item.filename}
+          onDelete={handleDelete}
         />
       ))}
     </div>
   );
-
-//   return (
-//     <div className="flex flex-col gap-1 p-2 mb-15 items-baseline justify-center">
-//       {list &&
-//         list.map((item: any) => (
-//           <SidebarItem
-//             key={item._id}
-//             title={item.title}
-//             status={item.status}
-//             time={item.createdAt}
-//             filename={item.filename}
-//           />
-//         ))}
-//       {!list && <div>No Contract History</div>}
-//       <Badge variant="high">High</Badge>
-//       <Badge variant="low">Low</Badge>
-//       <Badge variant="medium">Medium</Badge>
-//     </div>
-//   );
 };
 
 export default SidebarList;
