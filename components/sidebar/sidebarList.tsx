@@ -53,7 +53,7 @@ const SidebarList = () => {
   }
 
   return (
-    <div className="flex flex-col gap-1 p-2 mb-15">
+    <div className="flex shrink flex-col gap-1 p-2 mb-15">
       {contractList.map((item: sidebarProps) => (
         <SidebarItem
           key={item._id}
