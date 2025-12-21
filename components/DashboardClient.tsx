@@ -5,7 +5,6 @@ import { Sidebar } from "./sidebar/sidebar";
 import { ContentRenderer } from "./ContentRender";
 import { Button } from "@/components/ui/button";
 import { Issue } from "@/components/ContentRender";
-import { LoaderOne } from "./ui/loader";
 import { error } from "console";
 import sampleResponse from "@/sample_response";
 import {
@@ -31,7 +30,7 @@ export default function DashboardClient() {
     }
     formData.append("File", files[0]);
     try {
-      <LoaderOne />;
+
       const res = await fetch("http://localhost:3000/api/contract", {
         method: "POST",
         body : formData

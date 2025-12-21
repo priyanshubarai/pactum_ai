@@ -16,7 +16,7 @@ interface sidebarProps {
 
 const SidebarList = () => {
   const handleDelete = async (id: string) => {
-    setContranctList((prev) => prev.filter((item) => item._id !== id));
+    setContranctList((prev) => prev?.filter((item) => item._id !== id) ?? null);
     await fetch(`http://localhost:3000/api/contract/${id}`, {
       method: "DELETE",
     });

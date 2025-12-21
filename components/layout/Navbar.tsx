@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, ArrowUpRight } from "lucide-react";
-import { UserButton } from "@clerk/nextjs";
-import { SignedIn } from "@clerk/clerk-react";
+import { UserButton, SignedIn } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
 export function Navbar() {
