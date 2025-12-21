@@ -24,7 +24,7 @@ interface ContentRendererProps {
 export function ContentRenderer({ issues }: ContentRendererProps) {
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className=" w-full px-12 max-h-screen overflow-y-auto py-16 space-y-8">
             <p className="font-mono text-5xl font-white">
                 Summary based on contract analysis.
             </p>

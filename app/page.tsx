@@ -12,7 +12,6 @@ const page = () => {
     
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <Toaster />
           <Home />
         </TooltipProvider>
       </QueryClientProvider>

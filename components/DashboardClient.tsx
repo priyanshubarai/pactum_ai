@@ -23,37 +23,38 @@ export default function DashboardClient() {
   const [files, setFiles] = useState<File[]>([]);
 
   const handleAnalyze = async () => {
-    setLoading(true);
-    const formData = new FormData();
-    if(files.length<1){
-      throw new Error("NO FILE SELECTED")
-    }
-    formData.append("File", files[0]);
-    try {
-      <LoaderOne />;
-      const res = await fetch("http://localhost:3000/api/contract", {
-        method: "POST",
-        body : formData
-      });
-      const dataJson = await res.json();
-      console.log("ANALYSIS RECEIVED : ",dataJson.analysis.issues);
-      setIssues(dataJson.analysis.issues);
-      // console.log("ANALYSIS : ",dataJson[0].analysis)
-    } catch (err) {
-      console.error("Analysis failed", err);
-    } finally {
-      setLoading(false);
-    }
-    // setIssues(sampleResponse.data[0].analysis.issues);
+    // setLoading(true);
+    // const formData = new FormData();
+    // if(files.length<1){
+    //   throw new Error("NO FILE SELECTED")
+    // }
+    // formData.append("File", files[0]);
+    // try {
+    //   <LoaderOne />;
+    //   const res = await fetch("http://localhost:3000/api/contract", {
+    //     method: "POST",
+    //     body : formData
+    //   });
+    //   const dataJson = await res.json();
+    //   console.log("ANALYSIS RECEIVED : ",dataJson.analysis.issues);
+    //   setIssues(dataJson.analysis.issues);
+    //   // console.log("ANALYSIS : ",dataJson[0].analysis)
+    // } catch (err) {
+    //   console.error("Analysis failed", err);
+    // } finally {
+    //   setLoading(false);
+    // }
+    setIssues(sampleResponse.data[0].analysis.issues);
   };
 
   return (
     <div className="flex flex-row min-h-screen bg-[#0d0d0d] text-gray-300">
       <Sidebar />
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-col flex-1 ">
         {/* <main className="flex-1 p-6"> */}
         <div className="flex items-center justify-center h-full">
           {!issues ? (
+
             <div className="flex flex-col items-center gap-5">
               {/* <FileUpload /> */}
               <div>
@@ -65,7 +66,7 @@ export default function DashboardClient() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <FileUploadDemo files={files} setFiles={setFiles}/>
+                    <FileUploadDemo files={files} setFiles={setFiles} />
                   </CardContent>
                 </Card>
               </div>
@@ -73,11 +74,12 @@ export default function DashboardClient() {
                 variant="premium"
                 size="lg"
                 onClick={handleAnalyze}
-                disabled={loading || files.length==0}
+                disabled={loading || files.length == 0}
               >
                 {loading ? "Analyzing..." : "Analyze"}
               </Button>
             </div>
+
           ) : (
             <ContentRenderer issues={issues} />
           )}
