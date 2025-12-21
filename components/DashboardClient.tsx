@@ -24,28 +24,28 @@ export default function DashboardClient() {
   const [files, setFiles] = useState<File[]>([]);
 
   const handleAnalyze = async () => {
-    // setLoading(true);
-    // const formData = new FormData();
-    // if(files.length<1){
-    //   throw new Error("NO FILE SELECTED")
-    // }
-    // formData.append("File", files[0]);
-    // try {
-    //   <LoaderOne />;
-    //   const res = await fetch("http://localhost:3000/api/contract", {
-    //     method: "POST",
-    //     body : formData
-    //   });
-    //   const dataJson = await res.json();
-    //   console.log("ANALYSIS RECEIVED : ",dataJson.analysis.issues);
-    //   setIssues(dataJson.analysis.issues);
-    //   // console.log("ANALYSIS : ",dataJson[0].analysis)
-    // } catch (err) {
-    //   console.error("Analysis failed", err);
-    // } finally {
-    //   setLoading(false);
-    // }
-    setIssues(sampleResponse.data[0].analysis.issues);
+    setLoading(true);
+    const formData = new FormData();
+    if(files.length<1){
+      throw new Error("NO FILE SELECTED")
+    }
+    formData.append("File", files[0]);
+    try {
+      <LoaderOne />;
+      const res = await fetch("http://localhost:3000/api/contract", {
+        method: "POST",
+        body : formData
+      });
+      const dataJson = await res.json();
+      console.log("ANALYSIS RECEIVED : ",dataJson.analysis.issues);
+      setIssues(dataJson.analysis.issues);
+      // console.log("ANALYSIS : ",dataJson[0].analysis)
+    } catch (err) {
+      console.error("Analysis failed", err);
+    } finally {
+      setLoading(false);
+    }
+    // setIssues(sampleResponse.data[0].analysis.issues);
   };
 
   return (

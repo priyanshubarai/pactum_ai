@@ -1,6 +1,5 @@
 "use client";
 import { SidebarItem } from "@/components/sidebar/SidebarItem";
-import ContractsOfUser from "@/sample_getContractsOfUser";
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 
