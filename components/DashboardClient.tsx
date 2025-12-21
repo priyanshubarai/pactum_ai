@@ -7,20 +7,29 @@ import { ContentRenderer } from "./ContentRender";
 import { Button } from "@/components/ui/button";
 import { Issue } from "@/components/ContentRender";
 import { LoaderOne } from "./ui/loader";
+import { error } from "console";
 
 export default function DashboardClient() {
   const [issues, setIssues] = useState<Issue[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
 
   const handleAnalyze = async () => {
     setLoading(true);
+    const formData = new FormData();
+    if(!file){
+      throw new Error("NO FILE SELECTED")
+    } 
+    formData.append("File", file);
     try {
       <LoaderOne />;
-      const res = await fetch("/api/contract", {
+      const res = await fetch("http://localhost:3000/api/contract", {
         method: "POST",
+        body : formData
       });
       const dataJson = await res.json();
       setIssues(dataJson[0].analysis.issues);
+      console.log("ANALYSIS : ",dataJson[0].analysis)
     } catch (err) {
       console.error("Analysis failed", err);
     } finally {
@@ -37,13 +46,13 @@ export default function DashboardClient() {
           <div className="flex items-center justify-center h-full">
             {!issues ? (
               <div className="flex flex-col items-center gap-5">
-                <FileUpload />
+                <FileUpload file={file} setfile={setFile} />
                 <Button
                   variant="premium"
                   size="lg"
                   text={loading ? "Analyzing..." : "Analyze"}
                   onClick={handleAnalyze}
-                  disabled={loading}
+                  disabled={loading || !file}
                 />
               </div>
             ) : (

@@ -35,7 +35,6 @@ const SidebarList = () => {
         `http://localhost:3000/api/contract/${user_id}`
       );
       const data = await res.json();
-      console.log("RESPONSE : ", data.contract);
       setContranctList(data.contract);
     } catch (err) {
       console.error("ERROR IN SIDEBAR : ", err);

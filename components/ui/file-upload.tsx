@@ -3,9 +3,13 @@
 import { useState } from "react"
 import { UploadCloud } from "lucide-react"
 
-export default function FileUpload() {
+type FileUploadProps = {
+  file: File | null;
+  setfile: React.Dispatch<React.SetStateAction<File | null>>;
+};
+
+export default function FileUpload({file,setfile} : FileUploadProps) {
   const [isHover, setIsHover] = useState(false)
-  const [file, setFile] = useState<File | null>(null)
 
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -26,14 +30,14 @@ export default function FileUpload() {
     setIsHover(false)
     const files = e.dataTransfer.files
     if (files.length > 0) {
-      setFile(files[0])
+      setfile(files[0])
     }
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (files && files.length > 0) {
-      setFile(files[0])
+      setfile(files[0])
     }
   }
 
