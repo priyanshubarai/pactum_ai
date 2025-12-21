@@ -17,7 +17,7 @@ interface sidebarProps {
 const SidebarList = () => {
   const handleDelete = async (id: string) => {
     setContranctList((prev) => prev?.filter((item) => item._id !== id) ?? null);
-    await fetch(`http://localhost:3000/api/contract/${id}`, {
+    await fetch(`/api/contract/${id}`, {
       method: "DELETE",
     });
   };
@@ -33,7 +33,7 @@ const SidebarList = () => {
         process.env.NODE_ENV == "production"
           ? user?.user?.primaryEmailAddressId
           : "12345";
-      const res = await fetch(`http://localhost:3000/api/contract/${user_id}`);
+      const res = await fetch(`/api/contract/${user_id}`);
       const data = await res.json();
       setContranctList(data.contract);
     } catch (err) {

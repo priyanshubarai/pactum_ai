@@ -31,7 +31,7 @@ export default function DashboardClient() {
     formData.append("File", files[0]);
     try {
 
-      const res = await fetch("http://localhost:3000/api/contract", {
+      const res = await fetch("/api/contract", {
         method: "POST",
         body : formData
       });
